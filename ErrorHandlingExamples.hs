@@ -14,7 +14,7 @@ errorHandlingExample1 nume deno = do
         return $ (+) x 1
         where 
                 operation = if deno==0 
-                            then fail "Division by zero!"
+                            then throwError "Division by zero!"
                             else return $ nume/deno 
                 handler = (\_->return 77)
 
