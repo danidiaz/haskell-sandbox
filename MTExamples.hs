@@ -14,15 +14,15 @@ import Data.Either
 import Control.Monad.List
 import Control.Monad.Identity
 
+-- Run with: runIdentity $ runErrorT $ errorIdentityExample 7 1      
 errorIdentityExample :: (Fractional a) => a -> a -> ErrorT String Identity a
 errorIdentityExample nume deno = 
         if deno==0 then
                 fail "Division by zero!"
         else return $ nume/deno 
 
--- run with: runIdentity $ runErrorT $ errorIdentityExample 7 1      
 
-
+-- Run with: runStateT stateIOExample "Initial state"
 stateIOExample :: StateT String IO () 
 stateIOExample = do
   liftIO $ putStr "write something, empty string to quit: "
@@ -36,9 +36,8 @@ stateIOExample = do
           stateIOExample
         []  -> return ()
 
--- run with: runStateT stateIOExample "Initial state"
 
-
+-- Run with: runErrorT errorIOExample 
 errorIOExample :: ErrorT String IO String
 errorIOExample = do
   liftIO $ putStr "write something, empty string will get an error: "
@@ -47,9 +46,8 @@ errorIOExample = do
         _:_ -> return str
         []  -> fail "empty string!"
 
--- run with: runErrorT errorIOExample 
 
-
+-- Run with: runState (runErrorT errorStateExample) 7
 errorStateExample :: ErrorT String (State Int) String
 errorStateExample = do
         n <- lift get
@@ -61,10 +59,9 @@ errorStateExample = do
             lift $ put (n+1)
             n2 <- lift get
             return $ show n2
-
--- run with: runState (runErrorT errorStateExample) 7
                                      
 
+-- Run with: runStateT stateErrorExample 7
 stateErrorExample :: StateT Int (Either String) String 
 stateErrorExample = do
        n <- get
@@ -76,9 +73,8 @@ stateErrorExample = do
            n2 <- get
            return $ show n2
 
--- run with: runStateT stateErrorExample 7
 
-
+-- Run with: runStateT (runErrorT errorStateIOExample) 2
 errorStateIOExample :: ErrorT String (StateT Int IO) String 
 errorStateIOExample = do
         liftIO $ putStr "write something, empty string will get an error: "
@@ -93,5 +89,4 @@ errorStateIOExample = do
                           return str
                 []  -> fail "No empty strings allowed!" 
 
--- run with: runStateT (runErrorT errorStateIOExample) 2
 
