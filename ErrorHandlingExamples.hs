@@ -36,7 +36,21 @@ instance CE.Exception FooException
 errorHandlingExample2:: ErrorT String IO Int
 errorHandlingExample2 = 
      let handler = \_ -> throwError "oops..." 
-     in
-        do
-           catchError (liftIO $ CE.throw FooException) handler
+     in do
+           catchError (liftIO $ CE.throwIO FooException) handler
            return 5
+
+-- Catching IO exceptions inside ErrorT.
+-- Uses monad-control, and it works.
+-- See http://www.yesodweb.com/blog/2011/08/monad-control
+-- Run with: runErrorT errorHandlingExample3
+errorHandlingExample3:: ErrorT String IO Int
+errorHandlingExample3 =
+     let 
+        handler::FooException -> ErrorT String IO Int 
+        handler = \_ -> throwError "oops..." 
+     in do
+           CEC.catch (CEC.throwIO FooException) handler 
+           return 5     
+
+
