@@ -2,14 +2,16 @@
 
 module ErrorHandlingExamples (
         errorHandlingExample1,
-        errorHandlingExample2
+        errorHandlingExample2,
+        errorHandlingExample3,
+        errorHandlingExample4
 ) where
 
 import Control.Monad
 import Control.Monad.Error
 import Control.Monad.Identity
-import qualified Control.Exception as CE
-import qualified Control.Exception.Control as CEC
+import qualified Control.Exception as Ex
+import qualified Control.Exception.Control as ExC
 import Data.Typeable
 
 -- Run with: runIdentity $ runErrorT $ errorHandlingExample1 7 1      
@@ -27,7 +29,7 @@ errorHandlingExample1 nume deno = do
 data FooException = FooException
      deriving (Show, Typeable)
 
-instance CE.Exception FooException
+instance Ex.Exception FooException
 
 -- Catching IO exceptions inside ErrorT.
 -- Naive attempt that DOESN'T WORK. 
@@ -37,7 +39,7 @@ errorHandlingExample2:: ErrorT String IO Int
 errorHandlingExample2 = 
      let handler = \_ -> throwError "oops..." 
      in do
-           catchError (liftIO $ CE.throwIO FooException) handler
+           catchError (liftIO $ Ex.throwIO FooException) handler
            return 5
 
 -- Catching IO exceptions inside ErrorT.
@@ -50,7 +52,20 @@ errorHandlingExample3 =
         handler::FooException -> ErrorT String IO Int 
         handler = \_ -> throwError "oops..." 
      in do
-           CEC.catch (CEC.throwIO FooException) handler 
+           ExC.catch (ExC.throwIO FooException) handler 
+           return 5     
+
+
+-- Catching IO exceptions inside ErrorT.
+-- Rough homebrew solution which also works.
+-- Run with: runErrorT errorHandlingExample4
+errorHandlingExample4:: ErrorT String IO Int
+errorHandlingExample4 =
+     let 
+        handler::FooException -> IO (Either String Int)
+        handler = \_ -> return (Left "ooops...") 
+     in do
+           ErrorT $ Ex.catch (Ex.throwIO FooException) handler 
            return 5     
 
 
