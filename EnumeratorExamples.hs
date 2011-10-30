@@ -41,3 +41,23 @@ enumeratorExample4 =
         iter = EL.fold (+) 0 
     in  E.run $ enum1 >==> enum2 $$ iter                 
 
+-- Using the "unique" Enumeratee,
+-- composing it with an source Enumerator.
+-- Remember that joinE is equivalent to ($=)
+enumeratorExample5 = 
+    let
+        enum = E.enumList 1 [1,2,1,2,3,4::Int] 
+        iter = EL.fold (+) 0 
+    in  E.run $ enum $= EL.unique $$ iter                 
+
+-- Enumeratees can also be composed with Iteratees
+-- using the (=$) operator.
+enumeratorExample6 = 
+    let
+        enum = E.enumList 1 [1,2,1,2,3,4::Int] 
+        iter = EL.fold (+) 0 
+    in  E.run $ enum $$ EL.unique =$ iter                 
+
+
+
+
