@@ -31,7 +31,7 @@ enumeratorExample2 =
         startIterWith n = EL.fold (+) n 
     in  E.run $ enum $$ (EL.head_ >>= startIterWith)                
 
--- How dows head work on an infinite list?
+-- How does head work on an infinite list?
 enumeratorExample3 = 
         E.run $ EL.repeat 1 $$ EL.head_
 
@@ -55,6 +55,8 @@ enumeratorExample5 =
 
 -- Enumeratees can also be composed with Iteratees
 -- using the (=$) operator.
+-- Remember that:
+--      enum =$ iter = joinI (enum $$ iter)
 enumeratorExample6 = 
     let
         enum = E.enumList 1 [1,2,1,2,3,4::Int] 
