@@ -2,7 +2,10 @@ module EnumeratorExamples (
         enumeratorExample1,
         enumeratorExample2,
         enumeratorExample3,
-        enumeratorExample4
+        enumeratorExample4,
+        enumeratorExample5,
+        enumeratorExample6,
+        enumeratorExample7
 ) where
 
 import Control.Monad
@@ -58,6 +61,13 @@ enumeratorExample6 =
         iter = EL.fold (+) 0 
     in  E.run $ enum $$ EL.unique =$ iter                 
 
-
-
+-- Feeding a fold with two different enumerators.
+-- This could be done in several different ways.
+enumeratorExample7 = 
+    let
+        strEnum = E.enumList 1 ["1","2","3"] 
+        intEnum1 = strEnum $= EL.map read 
+        intEnum2 = E.enumList 1 [4,5,6::Int] 
+        iter = EL.fold (+) 0
+    in  E.run $ intEnum2 $$ (intEnum1 $$ iter)
 
