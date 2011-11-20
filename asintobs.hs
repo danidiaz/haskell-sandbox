@@ -25,11 +25,11 @@ openText filename = do
        hSetBuffering handle $ BlockBuffering Nothing
        return handle
 
-interspersetee :: Monad m => ai -> E.Enumeratee ai ai m b
-interspersetee x = EL.concatMap (\u -> u:[x])
+intersperseEtee :: Monad m => ai -> E.Enumeratee ai ai m b
+intersperseEtee x = EL.concatMap (\u -> u:[x])
 
-newlineinterspersetee :: Monad m => E.Enumeratee T.Text T.Text m b
-newlineinterspersetee = interspersetee $ T.singleton '\n';
+newlineEtee :: Monad m => E.Enumeratee T.Text T.Text m b
+newlineEtee = intersperseEtee $ T.singleton '\n';
 
 asintobs = ET.map $ changechar 'a' 'b'
 
@@ -40,9 +40,9 @@ main =
        handle <- openText $ head args
        res <- E.run $ 
                 (ET.enumHandle handle) $= 
-                newlineinterspersetee $= asintobs $$
---              asintobs $= newlineinterspersetee $$
---              ^^^ If asintobs is put *before* the newline iteratee, 
+                newlineEtee $= asintobs $$
+--              asintobs $= newlineEtee $$
+--              ^^^ If asintobs is put *before* the newline enumeratee, 
 --                  a newline is added after each char. Odd!
                 ET.iterHandle stdout
        hClose handle
