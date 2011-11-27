@@ -9,6 +9,7 @@ import System.Environment
 -- See also:
 --      http://haskell.org/ghc/docs/7.2.2/html/users_guide/template-haskell.html
 --      http://www.haskell.org/haskellwiki/Template_Haskell
+--      http://www.haskell.org/haskellwiki/Uniplate
 
 $(iHateDelete
     [d|
