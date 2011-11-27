@@ -11,6 +11,11 @@ import System.Environment
 --      http://www.haskell.org/haskellwiki/Template_Haskell
 --      http://www.haskell.org/haskellwiki/Uniplate
 
+-- Things to try in ghci:
+--      runQ [d| foo x = x + 1 |]
+--      runQ [d| foo x = x + 1 |] >>= print
+--      $(stringE . show =<< reify ''Int)
+
 $(iHateDelete
     [d|
         mapDelete x = map (delete x)
