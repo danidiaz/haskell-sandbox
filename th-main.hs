@@ -13,6 +13,8 @@ import System.Environment
 --      http://www.hyperedsoftware.com/blog/entries/first-stab-th.html
 
 -- Things to try in ghci:
+--      :t [d| foo x = x + 1 |]
+--      :t runQ
 --      runQ [d| foo x = x + 1 |]
 --      runQ [d| foo x = x + 1 |] >>= print
 --      $(stringE . show =<< reify ''Int)
