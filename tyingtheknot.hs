@@ -5,19 +5,19 @@ import Data.List
 import Data.Maybe
 import qualified Data.Map as M
 
-type UntiedGraph = [(Char,[Char])] 
+type UntiedGraph c = [(c,[c])] 
 
-data Node = Node { nodeId::Char, nodeEdges::[Node] }
-type Graph = M.Map Char Node
+data Node c = Node { nodeId::c, nodeEdges::[Node c] }
+type Graph c = M.Map c (Node c)
 
-tieGraph :: UntiedGraph -> Graph  
+tieGraph :: Ord c => UntiedGraph c -> Graph c 
 tieGraph untied = 
         let tied = M.mapWithKey buildNode $ M.fromList untied
             buildNode k ns = Node k (catMaybes $ map removeIndirection ns)
             removeIndirection n = M.lookup n tied
         in  tied
 
-followPath :: Node -> [Int] -> [Node]
+followPath :: Node c -> [Int] -> [Node c]
 followPath =
     let next node index = (nodeEdges node)!!index
     in  scanl next 
