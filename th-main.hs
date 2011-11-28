@@ -23,6 +23,11 @@ import System.Environment
 --      runQ [| 1 + $([| 2 |]) |]
 --      runQ [t| IO Int |]
 --      runQ [d| f a = 1 |]
+--      :t reify 'Just
+--      :t reify ''Maybe
+--      :t reify ''Int
+--      $(reify ''Int >>= stringE . show)
+--      runQ (reify ''Int >>= stringE . show) --doesn't work
 
 $(iHateDelete
     [d|
