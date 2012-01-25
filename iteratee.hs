@@ -8,7 +8,7 @@ import qualified System.IO as SIO
 
 import           Data.ByteString
 import           Data.Word
-
+import           Data.ListLike.CharString
 import qualified Data.Iteratee as I
 import qualified Data.Iteratee.ListLike as IL
 import qualified Data.Iteratee.IO.Handle as IOH
@@ -42,3 +42,19 @@ main =
        str <- SIO.hGetLine handle
        SIO.putStr $ str ++ "\n"
        SIO.hClose handle
+       -- I wonder... can you compose an already "started" iteratee
+       -- with another iteratee?
+       handle <- openFile "iterdata/smallfile.txt" ReadMode
+       let
+            enum3 = IL.take 4
+            it3 = I.joinI $ enum3 (I.stream2list::I.Iteratee [Char] IO [Char])
+            enum4 = IL.take 4
+            it4 = I.joinI $ enum4 (I.stream2list::I.Iteratee [Char] IO [Char])
+       ii <- IOH.enumHandle 22 handle it3
+       SIO.hClose handle
+       let
+            combined = ii >> it4
+       handle <- openFile "iterdata/smallfile2.txt" ReadMode
+       iii <- IOH.enumHandle 22 handle combined >>= I.run
+       SIO.hClose handle
+       print iii
