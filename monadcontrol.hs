@@ -3,13 +3,15 @@ module Main (main) where
 import Control.Monad
 import Control.Monad.Error
 import Data.Either
-import Control.Monad.Trans.Control
+import Control.Monad.Trans.Control (control)
 import Control.Exception
 import System.IO
 import Prelude hiding (catch)
 
--- Turning IO exceptions into ErrorT errors using monad-control.
+-- Turning IO exceptions into monadic errors using monad-control.
 -- See http://www.yesodweb.com/blog/2011/08/monad-control.
+-- http://blog.ezyang.com/2012/01/monadbasecontrol-is-unsound/
+-- http://blog.ezyang.com/2012/01/modelling-io/
 foo:: ErrorT String IO String
 foo = control $ \run ->
     catch
