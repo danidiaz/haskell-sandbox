@@ -18,8 +18,17 @@ foo = control $ \run ->
          (run $ liftIO $ readFile "foo.txt")
          (\(e::IOException) -> run (throwError "couldn't open") )
 
+--
+foo2:: ErrorT String IO String -> ErrorT String IO String
+foo2 action = control $ \run ->
+    catch
+         (run action)
+         (\(e::IOException) -> run (throwError "couldn't open") )
+
 main :: IO ()
 main = do
     result <- runErrorT foo
     putStrLn . show $ result
-    
+    -- What happens if a received action is already a monadic error?
+    result2 <- runErrorT . foo2 . throwError $ "preexistent error"
+    putStrLn . show $ result2
