@@ -5,6 +5,8 @@ import Data.List
 import Data.Maybe
 import qualified Data.Map as M
     
+-- Experiments with list comprehensions and records.
+
 data Component = Component
     {
         _hash::Int,
@@ -35,6 +37,8 @@ titles' = [ (whole,title) | whole@Component { _specific = Window title } <- clis
 titles'' = [ (c,c') | c@Component { _specific = c'@(Window title) } <- clist]
 -- the {} in Window can be used even if Window is not a register 
 titles''' = [ (c,c') | c@Component { _specific = c'@(Window {}) } <- clist]
+
+-- read also: http://stackoverflow.com/questions/10393764/why-doesnt-ghc-give-a-compile-time-warning-for-the-no-match-in-record-selector 
 
 main = do 
     args <- getArgs
