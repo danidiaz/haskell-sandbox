@@ -39,6 +39,7 @@ titles'' = [ (c,c') | c@Component { _specific = c'@(Window title) } <- clist]
 titles''' = [ (c,c') | c@Component { _specific = c'@(Window {}) } <- clist]
 
 -- read also: http://stackoverflow.com/questions/10393764/why-doesnt-ghc-give-a-compile-time-warning-for-the-no-match-in-record-selector 
+-- also this: http://stackoverflow.com/questions/3275257/matching-multiple-data-type-constructors-at-once
 
 main = do 
     args <- getArgs
