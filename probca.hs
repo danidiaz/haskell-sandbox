@@ -1,32 +1,30 @@
-{-# LANGUAGE Rank2Types #-}
-{-# LANGUAGE ViewPatterns #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveFoldable #-}
-{-# LANGUAGE DeriveTraversable #-}
 
-import Prelude hiding (catch,(.),iterate,tail,repeat,sequence,take)
-import Data.Monoid
+-- uses packages:comonad-transformers,streams,MonadRandom
+
+import Prelude hiding (iterate,tail,repeat,sequence,take,zip,unzip)
+import Data.Stream.Infinite (Stream ((:>)),iterate,tail,repeat,take,zip,unzip,unfold)
 import Data.Foldable
-import Data.Traversable
-import Control.Category
-import Control.Monad hiding (sequence)
+import Data.Traversable (Traversable(..), sequence)
+import Control.Applicative
 import Control.Comonad
-import Control.Comonad.Trans.Class  
-import Control.Comonad.Trans.Env
-import System.Random
+import Control.Comonad.Trans.Class (lower)
+import Control.Comonad.Trans.Env (EnvT(..),ask)
+import System.Random (StdGen,mkStdGen)
 import Control.Monad.Random
 import Control.Monad.Random.Class
-import Control.Applicative
-import Data.Stream.Infinite
-import System.IO
-import Debug.Trace
-import qualified Data.Text as T
 
--- http://blog.sigfpe.com/2006/12/evaluating-cellular-automata-is.html
+-- inspired by http://blog.sigfpe.com/2006/12/evaluating-cellular-automata-is.html
 
-data U x = U (Stream x) x (Stream x) deriving (Functor,Foldable,Traversable)
+data U x = U (Stream x) x (Stream x) deriving (Functor,Foldable)
+
+instance Traversable U where
+    traverse f (U lstream focus rstream) = 
+        let pairs = liftA unzip . sequenceA . fmap (traversepair f) $ zip lstream rstream 
+            traversepair f (a,b) = (,) <$> f a <*> f b
+            rebuild c (u,v) = U u c v
+        in rebuild <$> f focus <*> pairs
 
 right (U a b (c:>cs)) = U (b:>a) c cs
 left  (U (a:>as) b c) = U as a (b:>c)
@@ -50,13 +48,13 @@ localRule ca =
 evolve :: EnvT Probs U Bool -> Rand StdGen (EnvT Probs U Bool)
 evolve ca = sequence $ extend localRule ca
 
-history :: Int -> EnvT Probs U Bool -> Stream (EnvT Probs U Bool)
+history :: StdGen -> EnvT Probs U Bool -> Stream (EnvT Probs U Bool)
 history seed initialca = 
     let unfoldf (ca,seed) = 
             let (seed',seed'') = runRand getSplit seed 
                 nextca = evalRand (evolve ca) seed'
             in  (nextca,(nextca,seed''))
-    in unfold unfoldf (initialca,mkStdGen seed)
+    in unfold unfoldf (initialca,seed)
 
 showca :: Int -> U Bool -> String
 showca margin ca = 
@@ -71,8 +69,9 @@ main = do
         seed = 77
         iterations = 10
         margin = 8
-    hSetBuffering stdout NoBuffering
-    -- putStrLn . showca margin . lower $ initialca 
-    sequence . fmap (putStrLn . showca margin . lower) . take iterations $ history seed initialca
+    sequence . fmap (putStrLn . showca margin . lower) 
+             . take iterations 
+             . history (mkStdGen seed) 
+             $ initialca
     return ()
 
