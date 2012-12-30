@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveFoldable #-}
 
--- uses packages:comonad-transformers,streams,MonadRandom
+-- uses packages: comonad-transformers,streams,MonadRandom
 
 import Prelude hiding (iterate,tail,repeat,sequence,take,zip,unzip)
 import Data.Stream.Infinite (Stream ((:>)),iterate,tail,repeat,take,zip,unzip,unfold)
@@ -15,7 +15,8 @@ import System.Random (StdGen,mkStdGen)
 import Control.Monad.Random
 import Control.Monad.Random.Class
 
--- inspired by http://blog.sigfpe.com/2006/12/evaluating-cellular-automata-is.html
+-- Inspired by http://blog.sigfpe.com/2006/12/evaluating-cellular-automata-is.html
+-- and http://demonstrations.wolfram.com/SimpleProbabilisticCellularAutomata/
 
 data U x = U (Stream x) x (Stream x) deriving (Functor,Foldable)
 
