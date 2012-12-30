@@ -66,7 +66,7 @@ history seed initialca =
     -- We need to split the generator because we are lazily evaluating
     -- an infinite random structure. The updated generator never "comes out"! 
     -- If we changed runRand for evalRand and tried to reuse the 
-    -- updated generator, the call would hang. 
+    -- updated generator for the next iteration, the call would hang. 
     let unfoldf (ca,seed) = 
             let (seed',seed'') = runRand getSplit seed 
                 nextca = evalRand (evolve ca) seed'
